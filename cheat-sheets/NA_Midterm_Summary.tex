@@ -1,0 +1,495 @@
+\documentclass[10pt]{article} % 10pt 字体，紧凑
+\usepackage[UTF8]{ctex}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsthm} % 数学符号和公式
+\usepackage{geometry} % 页面设置
+\usepackage{multicol} % 分栏
+\usepackage{enumitem} % 紧凑列表
+\usepackage{xcolor} % 颜色（可选，用于高亮）
+\usepackage{mathtools} % 在导言区添加
+
+% ===== 页面设置 =====
+\geometry{a4paper, margin=0.5cm} % 小页边距，最大化利用空间
+\setlength{\columnsep}{0.5cm} % 栏间距
+\setlength{\parindent}{0pt} % 无缩进
+\setlength{\parskip}{0pt} % 段落无间距
+
+% ===== 自定义命令 =====
+% 常用数学符号
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+
+% 常用运算符
+\newcommand{\diff}{\mathrm{d}}
+\newcommand{\T}{\mathsf{T}} % 转置
+
+% 矩阵命令
+\newcommand{\mat}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+
+% 定理环境（可选）
+\newtheorem{theorem}{定理}
+
+% ===== 文档开始 =====
+\begin{document}
+\footnotesize % 小字体，容纳更多内容
+\begin{multicols}{2} % 分三栏，根据内容调整
+
+% 你的内容从这里开始
+\section*{1-绪论}
+
+\subsection*{误差与有效数字}
+\begin{itemize}[leftmargin=*]
+\item \textbf{有效数字定义：}
+若 $\lfloor \log_{10}(x^*) \rfloor = \textcolor{green}{m}$，$\lceil \log_{10}(2|x-x^*|) \rceil = \textcolor{green}{m} - \textcolor{blue}{n} + 1$，则称近似值 $x^*$ 有 \textbf{\textcolor{blue}{n} 位有效数字}
+\end{itemize}
+
+\section*{2-多项式插值}
+
+\subsection*{① Lagrange 插值}
+
+\textbf{Lagrange 插值法的误差分析}
+设\textcolor{blue}{$f^{(n+1)}(x)$在$[a,b]$内存在}，节点$a \leq x_0 < x_1 < \cdots < x_n \leq b$，$L_n(x)$是 Lagrange 插值多项式，则插值余项
+\[
+R_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\omega_{n+1}(x)
+\]
+
+\begin{itemize}
+\item 如果可以求出
+$M_{n+1} = \max\limits_{a\leq x\leq b}|f^{(n+1)}(x)|$，
+则插值多项式 $L(x)$ 逼近 $f(x)$ 的截断误差限是
+\[
+|R_n(x)| \leq \frac{M_{n+1}}{(n+1)!}|\omega_{n+1}(x)|
+\]
+\end{itemize}
+
+\subsection*{②\ 差商与 Newton 插值}
+
+\paragraph{逐次线性插值}
+新的插值基函数
+\begin{align*}
+\omega_0 &= 1 \\
+\omega_1 &= x - x_0 \\
+\omega_2 &= (x - x_0)(x - x_1) \\
+&\vdots \\
+\omega_n &= (x - x_0)(x - x_1)\cdots(x - x_{n-1}) \\
+& \Rightarrow \textcolor{red}{\omega_{n+1} = \omega_n \cdot (x - x_n)}
+\end{align*}
+
+\begin{minipage}{0.48\textwidth}
+\begin{align*}
+p_1(x) &= y_0\omega_0 + \textcolor{red}{\frac{y_1 - y_0}{x_1 - x_0}}\omega_1 \\
+p_2(x) &= p_1(x) + \textcolor{red}{\frac{\frac{y_2 - y_0}{x_2 - x_0} - \frac{y_1 - y_0}{x_1 - x_0}}{x_2 - x_1}}\omega_2 \\
+&\vdots \\
+p_n(x) &= p_{n-1}(x) + \textcolor{red}{a_n}\omega_n
+\end{align*}
+\end{minipage}
+
+\paragraph{差商}
+\begin{itemize}
+\item 已知函数 $f(x)$ 和节点 $x_0, x_1, \ldots, x_k$, 则
+\begin{align*}
+& f[x_0, x_k] = \frac{f(x_k)-f(x_0)}{x_k-x_0} \\
+& f[x_0, x_1, x_k] = \frac{f[x_0, x_k] - f[x_0, x_1]}{x_k - x_1} \\
+& f [x_0, x_1, \ldots, x_k] = \frac{\splitfrac{f[x_0, x_1, \ldots, x_{k-2}, x_k]}{- f[x_0, x_1, \ldots, x_{k-2}, x_{k-1}]}}{x_k - x_{k-1}}
+\end{align*}
+
+\item 用差商重新表示插值多项式
+\begin{align*}
+p_1(x) &= y_0 + \textcolor{red}{f[x_0, x_1]}\omega_1 \\
+p_2(x) &= y_0 + \textcolor{red}{f[x_0, x_1]}\omega_1 + \textcolor{red}{f[x_0, x_1, x_2]}\omega_2
+\end{align*}
+\end{itemize}
+
+\begin{align*}
+f(x) = & f(x_0) + \textcolor{blue}{f[x_0, x]}(x - x_0) \\
+ = & f(x_0) + \textcolor{blue}{\bigl(f[x_0, x_1] + f[x_0, x_1, x](x - x_1)\bigr)} \cdot (x - x_0) \\
+ = & f(x_0) + f[x_0, x_1](x - x_0) + \textcolor{green}{f[x_0, x_1, x]} \cdot (x - x_0)(x - x_1) \\
+ = & f(x_0) + f[x_0, x_1](x - x_0) + \bigl(\textcolor{green}{f[x_0, x_1, x_2]} \\
+   & \textcolor{green}{- f[x_0, x_1, x_2, x](x - x_2)}\bigr) \cdot (x - x_0)(x - x_1) \\
+ = & f(x_0) + f[x_0, x_1](x - x_0) \\
+   & + f[x_0, x_1, x_2](x - x_0)(x - x_1) \\
+   & + \textcolor{red}{f[x_0, x_1, x_2, x]}(x-x_0)(x-x_1)(x-x_2)
+\end{align*}
+
+\columnbreak
+
+\fbox{\textbf{Newton 差商插值多项式}} \\[0.5ex]
+\colorbox{yellow!20}{$
+\begin{multlined}
+N_n(x) = f[x_0] + f[x_0, x_1]\omega_1(x) + \cdots + f[x_0, \ldots, x_n]\omega_n(x)
+\end{multlined}
+$}
+
+\fbox{\textbf{插值余项}} \\[0.5ex]
+\colorbox{red!10}{$
+\begin{multlined}
+R_n(x) = f[x_0, x_1, \ldots, x_n, x] \cdot \omega_{n+1}(x)
+\end{multlined}
+$}
+
+\paragraph{差商的性质}
+\begin{enumerate}
+\item 差商可以表示为函数值 $f(x_0), f(x_1), \ldots, f(x_k)$ 的线性组合
+\[
+f[x_0, x_1, \ldots, x_k] = \sum_{j=0}^{k} \frac{f(x_j)}{\prod_{i \neq j}(x_j - x_i)}
+\]
+证明（归纳法）
+
+\item 差商与节点的排序无关，即差商具有对称性
+
+\item 差商与阶导数之间的关系
+\[
+f[x_0, x_1, \ldots, x_k] = \frac{f^{(k)}(\xi)}{k!}
+\]
+思路：Lagrange 插值余项的定理
+
+\item （作为泛函对$f$的）线性性
+
+\item 对于不超过 $n$ 次的多项式 $f(x)$，其 $n$ 阶差商 $f[x_0, x_1, \ldots, x_n]$ 为常数（$n$ 次项系数）
+\end{enumerate}
+
+\subsection*{等距节点插值公式 $\Rightarrow$ 差分}
+
+\begin{itemize}
+\item 为表示方便，引入不变算子 $I$ 和移位算子 $E$
+\item 可以发现，向前差分算子 $\Delta = E - I$\\
+同理可得，向后差分算子 $\nabla = I - E^{-1}$\\
+\end{itemize}
+
+\paragraph{差分的性质}
+\begin{enumerate}
+\item 各阶差分均可用函数值表示\\
+$m$ 阶向前差分：$\Delta^m f_k = (E-I)^m f_k$
+
+\item 可用各阶差分表示函数值\\
+$f_{k+m} = (\Delta+I)^m f_k$
+
+\item 差商与差分的关系\\
+$x_k = x_0 + kh, \quad f[x_k, x_{k+1}, \ldots, x_{k+m}] = \dfrac{1}{m!}\dfrac{1}{h^m}\Delta^m f_k$
+
+\item 向前差分 $\Rightarrow$ Newton 前插公式
+\begin{align*}
+N_n(x) &= N_n(x_0 + th) = f(x_0) + t\Delta f_0 + \binom{t}{2}\Delta^2 f_0 + \cdots + \binom{t}{n}\Delta^n f_0 \\[1ex]
+R_n(x) &= \frac{f^{(n+1)}(\xi)}{(n+1)!} \binom{t}{n+1} h^{n+1}, \quad \xi \in (x_0, x_n)
+\end{align*}
+\end{enumerate}
+
+\subsection*{③ Hermite 插值}
+
+\textbf{Hermite 插值多项式}
+
+\begin{itemize}
+\item $2n + 1$ 次 Hermite 插值多项式
+\begin{align*}
+& H_{2n+1}(x) = \sum_{i=0}^{n} \left[y_i \alpha_i(x) + m_i \beta_i(x)\right] \\
+& \alpha_i(x) = \left[1 - 2(x-x_i)\sum_{k \neq i}\frac{1}{x_i - x_k}\right]l_{i}^2(x) \\
+& \beta_i(x) = (x - x_i)l_{i}^2(x)
+\end{align*}
+
+\item Hermite 插值余项
+\[
+R_{2n+1}(x) = \frac{f^{(2n+2)}(\xi)}{(2n+2)!}\omega_{n+1}^2(x)
+\]
+
+\item 两点三次 Hermite 插值
+\begin{align*}
+H_3(x) = & y_0\left(1+2\frac{x-x_0}{x_1-x_0}\right)\left(\frac{x-x_1}{x_0-x_1}\right)^2 \\
+& + y_1\left(1+2\frac{x-x_1}{x_0-x_1}\right)\left(\frac{x-x_0}{x_1-x_0}\right)^2 \\
+& + m_0(x-x_0)\left(\frac{x-x_1}{x_0-x_1}\right)^2 \\
+& + m_1(x-x_1)\left(\frac{x-x_0}{x_1-x_0}\right)^2
+\end{align*}
+
+\item 插值余项
+\[
+R_3(x) = \frac{f^{(4)}(\xi)}{4!}(x-x_0)^2(x-x_1)^2
+\]
+\end{itemize}
+
+\subsection*{④\ 分段插值}
+\textbf{三次样条插值}
+
+{如何求解三次样条插值函数？} \\
+
+\textbf{思路 1：直接利用分段三次 Hermite 插值} \\
+对 $k = 0, 1, \ldots, n - 1$，计算 $s_k(x)$ 的二阶导数，列出 $n+1$ 个方程，求解未知数 $m_0, m_1, \ldots, m_n$（一阶导数值）
+
+\begin{align*}
+s_k(x) = & y_k \left(1 + 2\frac{x - x_k}{x_{k+1} - x_k}\right)\left(\frac{x - x_{k+1}}{x_k - x_{k+1}}\right)^2 \\
+& + y_{k+1}\left(1 + 2\frac{x-x_{k+1}}{x_k-x_{k+1}}\right)\left(\frac{x-x_k}{x_{k+1}-x_k}\right)^2 \\
+& + \textcolor{red}{m_k}(x-x_k)\left(\frac{x - x_{k+1}}{x_k - x_{k+1}}\right)^2 \\
+& + \textcolor{red}{m_{k+1}}(x-x_{k+1})\left(\frac{x-x_k}{x_{k+1}-x_k}\right)^2
+\end{align*}
+
+求二阶导数，得
+\begin{align*}
+s_k''(x) = & 2\frac{(2m_k+m_{k+1})(x-x_{k+1})+(m_k+2m_{k+1})(x-x_k)}{(x_{k+1}-x_k)^2} \\
+& - 6\frac{y_{k+1}-y_k}{(x_{k+1}-x_k)^3}(x-x_{k+1}+x-x_k)
+\end{align*}
+
+\begin{align*}
+\Rightarrow & s_k''(x_k) = 2\frac{3f[x_k,x_{k+1}]-2m_k-m_{k+1}}{x_{k+1}-x_k}, \\
+& s_k''(x_{k+1}) = 2\frac{-3f[x_k,x_{k+1}]+2m_{k+1}+m_k}{x_{k+1}-x_k}
+\end{align*}
+
+代入二阶导数连续的条件 \\
+$s_k''(x_{k+1})=s_{k+1}''(x_{k+1})$ \\
+并利用 $h_k = x_{k+1} - x_k$ 化简，得
+\begin{align*}
+\frac{1}{h_k}\textcolor{red}{m_k} + 2\left(\frac{1}{h_k}+\frac{1}{h_{k+1}}\right)\textcolor{red}{m_{k+1}} + \frac{1}{h_{k+1}}\textcolor{red}{m_{k+2}} \\
+= 3\left(\frac{f[x_k, x_{k+1}]}{h_k} + \frac{f[x_{k+1}, x_{k+2}]}{h_{k+1}}\right)
+\end{align*}
+
+$k = 0, 1, \ldots, n - 2$
+
+
+\textbf{思路 2：基于 $S(x)$ 的二阶导数 $S''(x_k)=\textcolor{red}{M_k}$ ($k = 0, 1, \ldots, n$) 反推 $S(x)$}
+
+由于 $s_k(x)$ 是三次多项式，可知 $s_k''(x)$ 是线性函数
+\[
+s_k''(x) = M_k \frac{x-x_{k+1}}{x_k-x_{k+1}} + M_{k+1}\frac{x-x_k}{x_{k+1}-x_k}
+\]
+
+对上式积分两次，可得
+\begin{align*}
+s_k(x) = & \frac{(x - x_{k+1})^3}{6(x_k - x_{k+1})}\textcolor{red}{M_k} + \frac{(x-x_k)^3}{6(x_{k+1}-x_k)}\textcolor{red}{M_{k+1}} \\
+& + c_1 \frac{x-x_{k+1}}{x_k-x_{k+1}} + c_2 \frac{x-x_k}{x_{k+1}-x_k}
+\end{align*}
+
+代入插值条件 $s_k(x_k)=y_k$ 和 $s_k(x_{k+1})=y_{k+1}$，可确定积分常数 $c_1$ 和 $c_2$\\
+整理后，得到
+\begin{align*}
+s_k(x) = & \frac{(x - x_{k+1})^3}{6(x_k - x_{k+1})}\textcolor{red}{M_k} + \frac{(x-x_k)^3}{6(x_{k+1}-x_k)}\textcolor{red}{M_{k+1}} \\
+& + \left(y_k - \frac{\textcolor{red}{M_k}(x_k-x_{k+1})^2}{6}\right)\frac{x-x_{k+1}}{x_k-x_{k+1}} \\
+& + \left(y_{k+1} - \frac{\textcolor{red}{M_{k+1}}(x_{k+1}-x_k)^2}{6}\right)\frac{x-x_k}{x_{k+1}-x_k}
+\end{align*}
+
+对上式求导，得到一阶导数表达式
+\begin{align*}
+s_k'(x) = & \frac{M_k}{6}\frac{3(x-x_{k+1})^2 - (x_k-x_{k+1})^2}{x_k-x_{k+1}} \\
+& + \frac{M_{k+1}}{6}\frac{3(x-x_k)^2-(x_{k+1}-x_k)^2}{x_{k+1}-x_k} \\
+& + f[x_k, x_{k+1}]
+\end{align*}
+
+\begin{align*}
+\Rightarrow & s_k'(x_k) = \frac{2M_k + M_{k+1}}{6}(x_k-x_{k+1}) + f[x_k, x_{k+1}] \\
+& s_k'(x_{k+1}) = \frac{2M_{k+1} + M_k}{6}(x_{k+1}-x_k) + f[x_k, x_{k+1}]
+\end{align*}
+
+代入条件 $s_k'(x_{k+1})=s_{k+1}'(x_{k+1})$\\
+并利用 $h_k = x_{k+1} - x_k$ 化简，得
+\begin{align*}
+h_k\textcolor{red}{M_k} + 2(h_k + h_{k+1})\textcolor{red}{M_{k+1}} + h_{k+1}\textcolor{red}{M_{k+2}} \\
+= 6(f[x_{k+1}, x_{k+2}]-f[x_k, x_{k+1}])
+\end{align*}
+
+$k = 0, 1, \ldots, n - 2$
+
+\textbf{误差估计}
+设 $f(x) \in C^4[a,b]$, $S(x)$ 为满足第一或第二类边界条件的三次样条函数，则有
+\begin{align*}
+\max_{a\leq x\leq b}|f(x)-S(x)| &\leq \frac{5}{384}\max_{a\leq x\leq b}|f^{(4)}(x)|h^4 \\
+\max_{a\leq x\leq b}|f'(x)-S'(x)| &\leq \frac{1}{24}\max_{a\leq x\leq b}|f^{(4)}(x)|h^3 \\
+\max_{a\leq x\leq b}|f''(x)-S''(x)| &\leq \frac{3}{8}\max_{a\leq x\leq b}|f^{(4)}(x)|h^2
+\end{align*}
+其中 $h = \max\limits_{0\leq k\leq n-1}h_k = \max\limits_{0\leq k\leq n-1}|x_{k+1}-x_k|$.
+
+\section*{3-函数逼近}
+
+\subsection*{①\ 最佳一致逼近}
+
+\textbf{偏差点}
+\[
+|p_n(x_0) - f(x_0)| = \|p_n - f\|_{\infty}
+\]
+
+\textbf{Chebyshev定理}
+$p_n(x) \in H_n$ 是 $f(x) \in C[a, b]$ 的最佳一致逼近多项式的 \textbf{充分必要条件} 是 $p_n(x)$ 在 $[a, b]$ 上有 $n+2$ 个轮流为"正"、"负"的偏差点
+
+\begin{itemize}
+\item \textbf{推论1}：若 $f(x) \in C[a, b]$，则其 $n$ 次最佳一致逼近多项式存在且唯一
+\item \textbf{推论2}：若 $f(x) \in C[a, b]$，则其 $n$ 次最佳一致逼近多项式是 $f(x)$ 的一个 Lagrange 插值多项式
+\end{itemize}
+
+\subsection*{②\ 最佳平方逼近}
+
+\textbf{正交多项式}
+\begin{itemize}
+\item \textbf{性质 1}：$\{\phi_k(x)\}_{k=0}^{n}$ 构成 $H_n$ 的一组基
+\item \textbf{性质 2}：$\phi_n(x)$ 与所有次数小于 $n$ 的多项式正交
+\item \textbf{性质 3}：三项递推公式 设 $\phi_k$ 首项系数为 $a_k \neq 0$，则有
+\begin{align*}
+\textcolor{blue}{\phi_{n+1}(x)} = & \frac{a_{n+1}}{a_n}\left[\left(x - \frac{\langle x\phi_n(x), \phi_n(x) \rangle}{\langle \phi_n(x), \phi_n(x) \rangle}\right)\textcolor{blue}{\phi_n(x)}\right. \\
+& \left. - \frac{a_{n-1}}{a_n}\frac{\langle x\phi_n(x), \phi_n(x) \rangle}{\langle \phi_{n-1}(x), \phi_{n-1}(x) \rangle}\textcolor{blue}{\phi_{n-1}(x)}\right]
+\end{align*}
+\item \textbf{性质 4}：设 $\{\phi_k(x)\}_{k=0}^{\infty}$ 为 $[a, b]$ 上的带权 $\rho(x)$ 的 $k$ 次正交多项式，则 $\phi_n(x)$ 在 $(a, b)$ 内有 $n$ 个 \textcolor{red}{不同的零点（单实根）}
+\end{itemize}
+
+\fbox{\textbf{法方程（也适用于非正交多项式的基）}}
+\begin{align*}
+& \left\langle f - \sum_{j=0}^{n} a_j \phi_j, \phi_k \right\rangle = 0 \\
+\Rightarrow & \colorbox{blue!10}{$\displaystyle\sum_{j=0}^{n}\langle \phi_k, \phi_j \rangle a_j = \langle f, \phi_k \rangle$}
+\end{align*}
+
+\textbf{求解 $n$ 次最佳平方逼近多项式}
+
+\paragraph{方法 1}：以 $1, x, x^2, \ldots, x^n$ 为基，设 $\rho(x) \equiv 1$, $f(x) \in C[0, 1]$
+直接求解法方程  
+$\sum_{j=0}^{n}\langle \phi_k, \phi_j \rangle \textcolor{red}{a_j} = \langle f, \phi_k \rangle$, $k = 0, 1, \ldots, n$\\
+其中 $\langle \phi_k, \phi_j \rangle = \int_0^1 x^{k+j} dx = \frac{1}{k+j+1}$\\
+最后代入 $p^*(x) = \sum_{j=0}^{n} a_j \phi_j(x)$ 即可
+
+\colorbox{green!20}{$
+\langle f - p^*, \phi_k \rangle = 0,\quad k = 0, 1, \ldots, n
+$}
+
+\textbf{平方误差}：
+\begin{align*}
+\|\delta(x)\|_2^2 &= \langle f - p^*, f - p^* \rangle \\
+&= \langle f, f \rangle - \langle p^*, f \rangle \\
+&= \|f(x)\|_2^2 - \sum_{j=0}^{n}\textcolor{red}{a_j}\langle \phi_j, f \rangle
+\end{align*}
+
+\paragraph{方法 2}：以正交多项式 $\phi_0, \phi_1, \phi_2, \ldots, \phi_n$ 为基\\
+\textbf{平方误差}：$\|\delta(x)\|_2^2 = \|f(x)\|_2^2 - \sum_{j=0}^{n}\textcolor{red}{\dfrac{\langle f, \phi_j \rangle^2}{\langle \phi_j, \phi_j \rangle}}$
+
+\columnbreak
+
+\textbf{常见的正交多项式}
+
+\subsubsection*{1. Legendre 多项式}
+当区间为 $[-1, 1]$，权函数 $\rho(x) \equiv 1$ 时，由 $\{1, x, x^2, \ldots, x^n, \ldots\}$ 正交化得到的多项式
+\[
+P_n(x) = \frac{1}{2^n n!} \frac{d^n}{dx^n}[(x^2-1)^n]
+\]
+
+\begin{align*}
+P_0(x) &= 1 \\
+P_1(x) &= x \\
+P_2(x) &= \frac{3x^2-1}{2} \\
+P_3(x) &= \frac{5x^3 - 3x}{2} \\
+P_4(x) &= \frac{35x^4-30x^2+1}{8}
+\end{align*}
+
+\textbf{性质}
+\begin{enumerate}
+\item 递推关系：$(n+1)P_{n+1}(x) = (2n+1)xP_n(x) - nP_{n-1}(x)$
+\item 正交性：$\|P_n(x)\|_2^2 = \dfrac{2}{2n+1}$
+\item 奇偶性
+\end{enumerate}
+
+\begin{itemize}
+\item \textbf{一般区间上的最佳平方逼近多项式}\\
+思路：变量代换\\
+$g(x) = f(\mu + \delta x)$, $p_f(x) = p_g\left(\dfrac{x-\mu}{\delta}\right)$
+\end{itemize}
+
+\subsubsection*{2. Chebyshev 多项式}
+当区间为 $[-1, 1]$，权函数 $\rho(x) = \dfrac{1}{\sqrt{1-x^2}}$ 时，由 $\{1, x, x^2, \ldots, x^n, \ldots\}$ 正交化得到的多项式
+\[
+T_n(x) = \cos(n \cdot \arccos(x)),\quad |x| \leq 1
+\]
+若令 $x = \cos\theta$，则 $T_n(x) = \cos n\theta$
+
+\begin{align*}
+T_0(x) &= 1 \\
+T_1(x) &= x \\
+T_2(x) &= 2x^2 - 1 \\
+T_3(x) &= 4x^3 - 3x \\
+T_4(x) &= 8x^4 - 8x^2 + 1
+\end{align*}
+
+\textbf{性质}
+\begin{enumerate}
+\item 递推关系：$T_{n+1}(x) = 2xT_n(x) - T_{n-1}(x)$\\
+$T_n(x)$ 的最高项系数为 $2^{n-1}$ ($n \geq 1$)
+\item 正交性：$\|T_n(x)\|_2^2 = \begin{cases}
+\frac{\pi}{2}, & n \neq 0 \\
+\pi, & n = 0
+\end{cases}$
+\item 奇偶性
+\item $n$个零点：$\cos\left(\dfrac{2k-1}{2n}\pi\right)$, $k = 1, 2, \ldots, n$\\
+\colorbox{red!10}{\textbf{Chebyshev节点}}
+\item $n+1$个极值点：$\cos\dfrac{k\pi}{n}$, $k = 0, 1, 2, \ldots, n$
+\end{enumerate}
+
+\textbf{定理}
+在区间 $[-1,1]$ 上的所有最高项系数为 $1$ 的 $n$ 次多项式中，$\dfrac{1}{2^{n-1}}T_n(x)$ \textcolor{red}{与零的偏差最小}，其偏差为 $\dfrac{1}{2^{n-1}}$
+
+由 Chebyshev 定理可知，在区间 $[-1, 1]$ 上，$x^n$ 在 $H_{n-1}$ 中的最佳一致逼近多项式是 $x^n - \dfrac{1}{2^{n-1}}T_n(x)$
+
+\bigbreak
+
+\textbf{定理}
+设函数 $f(x) \in C^{n+1}[-1, 1]$，若插值节点 $x_0, x_1, \ldots, x_n$ 为 Chebyshev 多项式的 $n+1$ 个零点，则插值误差 $\|f(x) - L_n(x)\|_{\infty}$ 最小，且
+\[
+\|f(x) - L_n(x)\|_{\infty} = \max_{-1\leq x\leq 1}|R_n(x)| \leq \frac{|M_{n+1}|}{(n+1)!}\|\omega_{n+1}(x)\|_{\infty} = \frac{|M_{n+1}|}{2^n(n+1)!}
+\]
+
+\colorbox{green!20}{%
+\begin{minipage}{\linewidth}
+• 用 Chebyshev 多项式的零点插值，可以使得总体插值误差最小！\\
+• 可通过 \textcolor{blue}{变量代换}，将上述定理推广至区间 $[a, b]$
+\end{minipage}
+}
+
+\subsubsection*{3. Hermite 多项式}
+当区间为 $(-\infty, \infty)$，权函数 $\rho(x) = e^{-x^2}$ 时，由 $\{1, x, x^2, \ldots, x^n, \ldots\}$ 正交化得到的多项式
+\[
+H_n(x) = (-1)^n e^{x^2} \frac{d^n}{dx^n}e^{-x^2} = e^{-x^2} \frac{d^n}{dx^n}e^{x^2}
+\]
+
+\begin{align*}
+H_0(x) &= 1 \\
+H_1(x) &= 2x \\
+H_2(x) &= 4x^2 - 2 \\
+H_3(x) &= 8x^3 - 12x \\
+H_4(x) &= 16x^4 - 48x^2 + 12
+\end{align*}
+
+\textbf{性质}
+\begin{itemize}
+\item 递推关系：$H_{n+1}(x) = 2xH_n(x) - 2nH_{n-1}(x)$ \\
+首项系数为 $2^n$
+\item 正交性：$\|H_n(x)\|_2^2 = \sqrt{\pi}2^n n!$
+\end{itemize}
+
+\colorbox{green!20}{%
+\begin{minipage}{\linewidth}
+Hermite 多项式可用作神经网络的激活函数的一组基
+\end{minipage}
+}
+
+\subsection*{③ 曲线拟合的最小二乘法}
+
+\textbf{求解最小二乘逼近函数}
+\begin{itemize}
+\item \textbf{方法 1}：直接求解法方程
+\item \textbf{方法 2}：用正交多项式作最小二乘拟合
+\end{itemize}
+
+\textbf{构造带权正交多项式的方法}
+\begin{itemize}
+\item \textbf{三项递推公式}
+\[
+\left\{
+\begin{aligned}
+\phi_0(x) &= 1,\quad \phi_1(x) = x - \alpha_0, \\
+\phi_{k+1}(x) &= (x - \alpha_k)\phi_k(x) - \beta_k \phi_{k-1}(x),
+\end{aligned}
+\right.
+\]
+其中
+\begin{align*}
+\alpha_k &= \frac{\langle x\phi_k, \phi_k \rangle}{\langle \phi_k, \phi_k \rangle} \\
+\beta_k &= \frac{\langle \phi_k, \phi_k \rangle}{\langle \phi_{k-1}, \phi_{k-1} \rangle}
+\end{align*}
+
+\item \textbf{正交多项式是目前为止多项式拟合的最好方法}\\
+不需要解线性方程组，给定次数 $n$，可以根据三项递推公式方便地计算正交多项式
+\end{itemize}
+
+\end{multicols}
+\end{document}
