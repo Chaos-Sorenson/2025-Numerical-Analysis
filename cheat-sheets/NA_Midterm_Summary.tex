@@ -14,20 +14,20 @@
 \setlength{\parindent}{0pt} % 无缩进
 \setlength{\parskip}{0pt} % 段落无间距
 
-% ===== 自定义命令 =====
-% 常用数学符号
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\C}{\mathbb{C}}
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\Q}{\mathbb{Q}}
+% % ===== 自定义命令 =====
+% % 常用数学符号
+% \newcommand{\R}{\mathbb{R}}
+% \newcommand{\C}{\mathbb{C}}
+% \newcommand{\N}{\mathbb{N}}
+% \newcommand{\Z}{\mathbb{Z}}
+% \newcommand{\Q}{\mathbb{Q}}
 
-% 常用运算符
-\newcommand{\diff}{\mathrm{d}}
-\newcommand{\T}{\mathsf{T}} % 转置
+% % 常用运算符
+% \newcommand{\diff}{\mathrm{d}}
+% \newcommand{\T}{\mathsf{T}} % 转置
 
-% 矩阵命令
-\newcommand{\mat}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+% % 矩阵命令
+% \newcommand{\mat}[1]{\begin{bmatrix} #1 \end{bmatrix}}
 
 % 定理环境（可选）
 \newtheorem{theorem}{定理}
@@ -322,7 +322,7 @@ $p_n(x) \in H_n$ 是 $f(x) \in C[a, b]$ 的最佳一致逼近多项式的 \textb
 \item \textbf{性质 3}：三项递推公式 设 $\phi_k$ 首项系数为 $a_k \neq 0$，则有
 \begin{align*}
 \textcolor{blue}{\phi_{n+1}(x)} = & \frac{a_{n+1}}{a_n}\left[\left(x - \frac{\langle x\phi_n(x), \phi_n(x) \rangle}{\langle \phi_n(x), \phi_n(x) \rangle}\right)\textcolor{blue}{\phi_n(x)}\right. \\
-& \left. - \frac{a_{n-1}}{a_n}\frac{\langle x\phi_n(x), \phi_n(x) \rangle}{\langle \phi_{n-1}(x), \phi_{n-1}(x) \rangle}\textcolor{blue}{\phi_{n-1}(x)}\right]
+& \left. - \frac{a_{n-1}}{a_n}\frac{\langle \phi_n(x), \phi_n(x) \rangle}{\langle \phi_{n-1}(x), \phi_{n-1}(x) \rangle}\textcolor{blue}{\phi_{n-1}(x)}\right]
 \end{align*}
 \item \textbf{性质 4}：设 $\{\phi_k(x)\}_{k=0}^{\infty}$ 为 $[a, b]$ 上的带权 $\rho(x)$ 的 $k$ 次正交多项式，则 $\phi_n(x)$ 在 $(a, b)$ 内有 $n$ 个 \textcolor{red}{不同的零点（单实根）}
 \end{itemize}
